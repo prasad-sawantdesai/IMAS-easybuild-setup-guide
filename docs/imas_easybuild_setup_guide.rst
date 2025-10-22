@@ -1,4 +1,4 @@
-.. _easybuild_rocky:
+.. _easybuild_rhel:
 
 =============================================
 EasyBuild on RHEL (system-wide, Lmod)
@@ -7,7 +7,6 @@ EasyBuild on RHEL (system-wide, Lmod)
 A concise, repeatable procedure to install **Lmod** and **EasyBuild 4.x** on Red Hat Enterprise Linux 8/9, build
 modules under `/opt/easybuild`, and keep permissions sane for multiple users.
 
-This guide is written as a set of **.rst pages** you can drop into a Sphinx project for GitHub Pages.
 It clearly marks **[root]** vs **[user]** commands and provides copy-paste blocks.
 
 .. contents:: Page index
@@ -254,7 +253,7 @@ List the module tree:
 
 ---
 
-9. Day-2 ops and good practices
+9. ops and good practices
 
 ---
 
@@ -288,12 +287,9 @@ New shells may need a re-login to pick up group membership.
 **Q: Which directory name is correct: modulespath.d or modulepath.d?**
 Use **/etc/lmod/modulespath.d** (with an **s**). `modulepath.d` is incorrect.
 
-**Q: Shared folder mount path case mismatch**
-Example: you created `/mnt/DataShare` but mounted to `/mnt/datashare`; fix the case to match exactly.
-
 ---
 
-11. Appendix: Command log
+1.  Appendix: Command log
 
 ---
 
@@ -366,66 +362,4 @@ owned by `:easybuildgrp` so users can continue building.
 
 ---
 
-13. Sphinx project layout
 
----
-
-For GitHub Pages via Sphinx, a minimal layout might look like:
-
-.. code-block:: text
-
-docs/
-├─ conf.py
-├─ index.rst
-├─ prerequisites.rst
-├─ filesystem.rst
-├─ lmod.rst
-├─ easybuild_install.rst
-├─ config.rst
-├─ easyconfigs.rst
-├─ first_build.rst
-├─ operations.rst
-└─ troubleshooting.rst
-
-**index.rst**
-
-.. code-block:: rst
-
-# EasyBuild on RHEL
-
-.. toctree::
-:maxdepth: 2
-:caption: Contents
-
-```
-  prerequisites
-  filesystem
-  lmod
-  easybuild_install
-  config
-  easyconfigs
-  first_build
-  operations
-  troubleshooting
-```
-
-**conf.py (snippet)**
-
-.. code-block:: python
-
-project = "EasyBuild on RHEL"
-extensions = ["sphinx.ext.autosectionlabel"]
-html_theme = "furo"  # or 'alabaster' / 'sphinx_rtd_theme'
-html_title = project
-
-Build locally and publish with GitHub Pages (`main` branch, `docs/` folder) or a `gh-pages` workflow.
-
----
-
-14. Next steps
-
----
-
-* Add site-specific `.eb` files under `/opt/easybuild/local-easyconfigs`.
-* Consider a small CI job that runs `eb --dry-run --robot <your.eb>` to validate updates.
-* Periodically prune `buildpath` (`/opt/easybuild/tmp`) if space grows.
