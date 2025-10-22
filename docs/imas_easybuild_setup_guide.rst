@@ -1,14 +1,14 @@
 .. _easybuild_rocky:
 
 =============================================
-EasyBuild on Rocky Linux (system‑wide, Lmod)
+EasyBuild on RHEL (system-wide, Lmod)
 ============================================
 
-A concise, repeatable procedure to install **Lmod** and **EasyBuild 4.x** on Rocky Linux (RHEL‑likes), build
+A concise, repeatable procedure to install **Lmod** and **EasyBuild 4.x** on Red Hat Enterprise Linux 8/9, build
 modules under `/opt/easybuild`, and keep permissions sane for multiple users.
 
 This guide is written as a set of **.rst pages** you can drop into a Sphinx project for GitHub Pages.
-It clearly marks **[root]** vs **[user]** commands and provides copy‑paste blocks.
+It clearly marks **[root]** vs **[user]** commands and provides copy-paste blocks.
 
 .. contents:: Page index
 :local:
@@ -20,7 +20,7 @@ It clearly marks **[root]** vs **[user]** commands and provides copy‑paste blo
 
 ---
 
-**Supported OS**: Rocky Linux 8/9 (RHEL clones). Network access required for source downloads.
+**Supported OS**: Red Hat Enterprise Linux 8/9 (RHEL). (Also works on compatible clones.) Network access required for source downloads.
 
 **User/Group model**
 
@@ -45,8 +45,8 @@ Install development tools and common utilities.
 :caption: Base packages
 
 [root] dnf -y groupinstall "Development Tools"
-[root] dnf -y install 
-python3 python3-pip tcl lua lua-posix git rsync make wget 
+[root] dnf -y install \
+python3 python3-pip tcl lua lua-posix git rsync make wget \
 bzip2 xz tar unzip which file
 
 Enable EPEL (for extra packages) and install Lmod.
@@ -58,7 +58,7 @@ Enable EPEL (for extra packages) and install Lmod.
 [root] dnf -y install Lmod
 [user] module --version
 
-If `module` is not found for your user shell, start a new login shell (or re‑login).
+If `module` is not found for your user shell, start a new login shell (or re-login).
 
 ---
 
@@ -77,7 +77,7 @@ We will install all EasyBuild outputs under `/opt/easybuild`. Root will create t
 [root] chgrp -R easybuildgrp /opt/easybuild
 [root] chmod -R 2775 /opt/easybuild
 
-Add your user to the group and re‑login (or run `newgrp easybuildgrp` for the current shell):
+Add your user to the group and re-login (or run `newgrp easybuildgrp` for the current shell):
 
 .. code-block:: bash
 
@@ -94,7 +94,7 @@ Prefer a **user install** (no root needed) using `pip --user` or a Python venv. 
 EasyBuild tooling separate from system Python.
 
 .. code-block:: bash
-:caption: User‑local EasyBuild
+:caption: User-local EasyBuild
 
 [user] python3 -m pip install --user "easybuild==4.*"
 [user] eb --version
@@ -125,7 +125,7 @@ Note the directory is **modulespath.d** (with an **s**). Avoid using `modulepath
 
 ---
 
-6. EasyBuild system‑wide config
+6. EasyBuild system-wide config
 
 ---
 
@@ -138,7 +138,7 @@ all **values point inside** `/opt/easybuild` which is writable by the `easybuild
 [config]
 prefix = /opt/easybuild
 
-# Top‑level install roots
+# Top-level install roots
 
 installpath = %(prefix)s/software
 installpath-modules = %(prefix)s/modules
@@ -206,14 +206,14 @@ Validate the loaded configuration:
 
 ---
 
-Pull the upstream `easybuild-easyconfigs` into the **read‑only** `upstream` location, then (optionally)
+Pull the upstream `easybuild-easyconfigs` into the **read-only** `upstream` location, then (optionally)
 **rsync** a snapshot into your writable tree.
 
 .. code-block:: bash
 :caption: Clone upstream easyconfigs
 
 [root] mkdir -p /opt/easybuild/easyconfigs/upstream
-[user] git clone --depth 1 [https://github.com/easybuilders/easybuild-easyconfigs.git](https://github.com/easybuilders/easybuild-easyconfigs.git) 
+[user] git clone --depth 1 https://github.com/easybuilders/easybuild-easyconfigs.git \
 /opt/easybuild/easyconfigs/upstream
 
 Expose upstream to EasyBuild by **syncing** into your active search path or by adding upstream directly
@@ -221,7 +221,7 @@ to `robot-paths`. Here we sync to keep a flat tree:
 
 .. code-block:: bash
 
-[root] rsync -a /opt/easybuild/easyconfigs/upstream/easybuild/easyconfigs/ 
+[root] rsync -a /opt/easybuild/easyconfigs/upstream/easybuild/easyconfigs/ \
 /opt/easybuild/easyconfigs/
 
 Your local site customizations go in `/opt/easybuild/local-easyconfigs`.
@@ -254,13 +254,13 @@ List the module tree:
 
 ---
 
-9. Day‑2 ops and good practices
+9. Day-2 ops and good practices
 
 ---
 
-* **Build as user, not root.** Keep `/opt/easybuild` group‑writable (`2775`) and ensure all builders are in
+* **Build as user, not root.** Keep `/opt/easybuild` group-writable (`2775`) and ensure all builders are in
   `easybuildgrp`.
-* **Keep upstream fresh**: periodically re‑`git pull` and re‑`rsync` to update easyconfigs.
+* **Keep upstream fresh**: periodically re-`git pull` and re-`rsync` to update easyconfigs.
 * **Pin EB 4.x** in your user install; upgrade intentionally (`pip install --user -U 'easybuild==4.*'`).
 * **Never set** the deprecated `installpath-logs` option (removed in recent EB 4.x).
 
@@ -283,13 +283,13 @@ exists with read/execute permissions for your group.
 
 **Q: Permission denied writing to /opt/easybuild**
 Confirm your user is in `easybuildgrp` (`id`), the tree is `chgrp -R easybuildgrp` and has `chmod -R 2775`.
-New shells may need a re‑login to pick up group membership.
+New shells may need a re-login to pick up group membership.
 
 **Q: Which directory name is correct: modulespath.d or modulepath.d?**
 Use **/etc/lmod/modulespath.d** (with an **s**). `modulepath.d` is incorrect.
 
-**Q: VBox shared folder mount path mismatch**
-If you created `/mnt/Rockyshare` but mounted to `/mnt/RockyShare`, fix the case to match exactly.
+**Q: Shared folder mount path case mismatch**
+Example: you created `/mnt/DataShare` but mounted to `/mnt/datashare`; fix the case to match exactly.
 
 ---
 
@@ -328,7 +328,7 @@ annotated with **[root]** vs **[user]** where applicable.
 
 # Section 7: easyconfigs
 
-[user] git clone --depth 1 [https://github.com/easybuilders/easybuild-easyconfigs.git](https://github.com/easybuilders/easybuild-easyconfigs.git) /opt/easybuild/easyconfigs/upstream
+[user] git clone --depth 1 https://github.com/easybuilders/easybuild-easyconfigs.git /opt/easybuild/easyconfigs/upstream
 [root] rsync -a /opt/easybuild/easyconfigs/upstream/easybuild/easyconfigs/ /opt/easybuild/easyconfigs/
 
 # Section 5: Lmod path registration
@@ -351,17 +351,17 @@ annotated with **[root]** vs **[user]** where applicable.
 
 * Installing OS packages (`dnf`)
 * Installing Lmod and creating files in `/etc` (e.g., `/etc/lmod/modulespath.d` and `/etc/easybuild.d`)
-* Creating and permissioning the top‑level `/opt/easybuild` directories
+* Creating and permissioning the top-level `/opt/easybuild` directories
 * Managing Unix groups and membership (`groupadd`, `usermod`)
 
 **Use [user] for:**
 
 * Installing EasyBuild itself with `pip --user` (or within a venv)
 * Running `eb` builds (writes to `/opt/easybuild` via group permissions)
-* `git clone` of upstream easyconfigs **if** destination is group‑writable (or run via `sudo -u <user>`)
-* Day‑to‑day module usage (`module avail`, `module load`)
+* `git clone` of upstream easyconfigs **if** destination is group-writable (or run via `sudo -u <user>`)
+* Day-to-day module usage (`module avail`, `module load`)
 
-Tip: If you must create/modify files inside `/opt/easybuild` as root, ensure they stay group‑writable and
+Tip: If you must create/modify files inside `/opt/easybuild` as root, ensure they stay group-writable and
 owned by `:easybuildgrp` so users can continue building.
 
 ---
@@ -391,7 +391,7 @@ docs/
 
 .. code-block:: rst
 
-# EasyBuild on Rocky Linux
+# EasyBuild on RHEL
 
 .. toctree::
 :maxdepth: 2
@@ -413,7 +413,7 @@ docs/
 
 .. code-block:: python
 
-project = "EasyBuild on Rocky Linux"
+project = "EasyBuild on RHEL"
 extensions = ["sphinx.ext.autosectionlabel"]
 html_theme = "furo"  # or 'alabaster' / 'sphinx_rtd_theme'
 html_title = project
@@ -426,6 +426,6 @@ Build locally and publish with GitHub Pages (`main` branch, `docs/` folder) or a
 
 ---
 
-* Add site‑specific `.eb` files under `/opt/easybuild/local-easyconfigs`.
+* Add site-specific `.eb` files under `/opt/easybuild/local-easyconfigs`.
 * Consider a small CI job that runs `eb --dry-run --robot <your.eb>` to validate updates.
 * Periodically prune `buildpath` (`/opt/easybuild/tmp`) if space grows.
