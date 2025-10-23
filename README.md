@@ -4,7 +4,7 @@ A reproducible guide for setting up **EasyBuild** and **IMAS software stack** on
 
 ## Overview
 
-This guide provides a complete, step-by-step procedure to install and configure EasyBuild 4.x with Lmod on RHEL-based systems. It includes system-wide setup instructions, automated bootstrap scripts, and comprehensive documentation for building and managing software modules.
+This guide provides a complete, step-by-step procedure to install and configure EasyBuild 4.x with Lmod on RHEL-based systems, plus complete IMAS (Integrated Modelling & Analysis Suite) installation. It includes system-wide setup instructions, automated bootstrap scripts, and comprehensive documentation for building and managing software modules.
 
 ## Features
 
@@ -12,6 +12,7 @@ This guide provides a complete, step-by-step procedure to install and configure 
 - **Lmod integration** for environment module management
 - **Group-based permissions** for collaborative builds
 - **Automated bootstrap scripts** for quick setup
+- **IMAS installation support** with private ITER repository integration
 - **Comprehensive documentation** with Sphinx
 - Clear separation of root and user operations
 
@@ -40,7 +41,9 @@ This guide provides a complete, step-by-step procedure to install and configure 
 │   ├── 01_root_bootstrap.sh       # System-level setup (run as root)
 │   ├── 02_user_bootstrap.sh       # User-level setup (EasyBuild install)
 │   ├── 03_build_example.sh        # Test build script (EasyBuild module)
-│   └── 04_validate.sh             # Validation script for installation
+│   ├── 04_validate.sh             # Validation script for installation
+│   ├── 05_install_imas.sh         # IMAS installation script
+│   └── 06_validate_imas.sh        # IMAS validation script
 │
 ├── .github/workflows/             # CI/CD workflows
 │   ├── test-scripts.yml           # GitHub Actions test workflow
@@ -55,6 +58,8 @@ This guide provides a complete, step-by-step procedure to install and configure 
 ### Option 1: Automated Setup (Recommended)
 
 Use the provided scripts for quick installation. See [docs/automated_setup.rst](docs/automated_setup.rst) for full details.
+
+**Base EasyBuild Setup:**
 
 1. **Run root bootstrap** (as root):
    ```bash
@@ -76,9 +81,35 @@ Use the provided scripts for quick installation. See [docs/automated_setup.rst](
    bash scripts/04_validate.sh
    ```
 
+**IMAS Installation (Optional):**
+
+5. **Install IMAS** (requires ITER git access):
+   ```bash
+   # Install with Intel toolchain
+   bash scripts/05_install_imas.sh intel 5.4.3
+   
+   # Or install with FOSS toolchain
+   bash scripts/05_install_imas.sh foss 5.4.3
+   ```
+
+6. **Validate IMAS installation**:
+   ```bash
+   bash scripts/06_validate_imas.sh intel-2023b 5.4.3
+   ```
+
+7. **Use IMAS**:
+   ```bash
+   module load IMAS/5.4.3-intel-2023b
+   python3 -c "import imas_core; print('IMAS ready!')"
+   ```
+
+See [IMAS_INSTALL.md](IMAS_INSTALL.md) for detailed IMAS installation instructions.
+
 ### Option 2: Manual Setup
 
 Follow the detailed step-by-step documentation in the `docs/` directory:
+
+**Base EasyBuild Setup:**
 
 1. Review [Prerequisites](docs/prerequisites.rst)
 2. Set up [Filesystem Layout](docs/filesystem.rst)
@@ -87,6 +118,10 @@ Follow the detailed step-by-step documentation in the `docs/` directory:
 5. Configure [EasyBuild Settings](docs/config.rst)
 6. Set up [Easyconfigs](docs/easyconfigs.rst)
 7. Perform [First Build](docs/first_build.rst)
+
+**IMAS Installation:**
+
+8. Follow [IMAS Installation Guide](docs/imas_installation.rst) for complete IMAS setup
 
 **When to use which approach:**
 - **Automated**: Production deployments, quick setup, standard configurations
@@ -143,6 +178,7 @@ Common issues and solutions are documented in [docs/troubleshooting.rst](docs/tr
 
 After successful installation, consider:
 
+**Base EasyBuild:**
 - **Adding site-specific easyconfig files** - Place them in `/opt/easybuild/local-easyconfigs`
 - **Building additional software** - Use `eb <package>.eb --robot` to build more packages
 - **Updating easyconfigs** - Periodically pull latest configs from upstream
@@ -150,7 +186,14 @@ After successful installation, consider:
 - **Team collaboration** - Add other users to `easybuildgrp` group
 - **Setting up CI** - Adapt the provided GitHub Actions workflows for your environment
 
-For detailed operational guidance, see the [operations documentation](docs/operations.rst).
+**IMAS:**
+- **Install IMAS modules** - Follow the IMAS installation guide
+- **Configure IMAS backends** - Set up HDF5, MDSplus, and UDA data storage
+- **Test IMAS workflows** - Run example simulations and data analysis
+- **Multiple versions** - Install different IMAS versions for testing
+- **Language bindings** - Install additional language bindings as needed
+
+For detailed operational guidance, see the [operations documentation](docs/operations.rst) and [IMAS installation guide](docs/imas_installation.rst).
 
 ## Testing
 

@@ -15,13 +15,20 @@ This guide describes how to use the provided bootstrap scripts for a quick, auto
 Overview
 ========
 
-The repository includes five bash scripts that automate the entire setup process:
+The repository includes seven bash scripts that automate the entire setup process:
+
+**Base Setup:**
 
 1. **00_init_env.sh** - Environment initialization helper (sources Lmod and sets up paths)
 2. **01_root_bootstrap.sh** - System-level setup (requires root)
 3. **02_user_bootstrap.sh** - User-level EasyBuild installation
 4. **03_build_example.sh** - Test build to validate the installation
 5. **04_validate.sh** - Comprehensive validation of the installation
+
+**IMAS Setup:**
+
+6. **05_install_imas.sh** - Install complete IMAS suite
+7. **06_validate_imas.sh** - Validate IMAS installation
 
 These scripts implement the same procedures described in the manual setup documentation but with error handling, validation, and sensible defaults.
 
@@ -483,3 +490,181 @@ Comparing Automated vs Manual Setup
      - Learning, custom needs
 
 **Recommendation:** Use automated setup for production systems or when you need quick deployment. Use manual setup when learning EasyBuild or if you need custom configurations not supported by the scripts.
+
+---
+
+Step 5: IMAS Installation (Optional)
+=====================================
+
+After the base EasyBuild setup is complete, you can install IMAS modules.
+
+**Prerequisites:**
+
+* Base EasyBuild setup completed (steps 1-4)
+* Access to ITER git repository (git.iter.org)
+* Network connectivity to download IMAS sources
+
+**What the script does:**
+
+* Clones ITER easyconfigs repository (if not present)
+* Creates IMAS work directory
+* Installs base toolchain (intel-2023b or foss-2023b)
+* Installs IMAS dependencies (HDF5, MDSplus, UDA, Boost, etc.)
+* Installs IMAS modules in correct order
+* Verifies the installation
+
+Run IMAS installation
+----------------------
+
+.. code-block:: bash
+
+   # Install IMAS with Intel toolchain (default)
+   bash scripts/05_install_imas.sh intel 5.4.3
+
+   # Or install with FOSS toolchain
+   bash scripts/05_install_imas.sh foss 5.4.3
+
+   # Specify number of parallel jobs (default: 8)
+   bash scripts/05_install_imas.sh intel 5.4.3 16
+
+IMAS authentication
+-------------------
+
+If you need to authenticate to ITER git server:
+
+.. code-block:: bash
+
+   # Set up SSH keys
+   ssh-keygen -t rsa -b 4096 -C "your.email@iter.org"
+   
+   # Add to ITER git account
+   cat ~/.ssh/id_rsa.pub
+   # Copy this to your ITER git profile
+
+What to expect
+--------------
+
+The installation process will:
+
+1. Check prerequisites and authentication
+2. Clone ITER easyconfigs repository
+3. Install toolchain (~1-2 hours)
+4. Install IMAS dependencies
+5. Install IMAS modules in order (~30-60 minutes per module)
+
+Total installation time: 3-5 hours depending on system and modules selected.
+
+IMAS modules installed:
+
+* IMAS-AL-Core - Core library
+* IMAS-AL-Cpp - C++ bindings
+* IMAS-AL-Fortran - Fortran bindings
+* IMAS-AL-Python - Python bindings
+* IMAS-AL-HDC - HDF5 backend
+* IMAS-AL-MDSplus-models - MDSplus backend
+* IDS-Validator - Validation tools
+* IDStools - Utility tools
+* IMAS-Python - Python utilities
+* IMAS - Complete meta-module
+
+---
+
+Step 6: IMAS Validation (Optional)
+===================================
+
+After IMAS installation, validate it with the validation script.
+
+**What it does:**
+
+* Checks IMAS module availability
+* Loads IMAS module
+* Verifies environment variables
+* Tests Python imports
+* Checks library paths
+* Generates test scripts
+
+Run IMAS validation
+--------------------
+
+.. code-block:: bash
+
+   # Validate Intel toolchain installation
+   bash scripts/06_validate_imas.sh intel-2023b 5.4.3
+
+   # Or validate FOSS toolchain installation
+   bash scripts/06_validate_imas.sh foss-2023b 5.4.3
+
+Validation output
+-----------------
+
+On success, you'll see:
+
+.. code-block:: text
+
+   === Checking IMAS Modules ===
+   ✓ Found: IMAS-AL-Core/5.4.3-intel-2023b
+   ✓ Found: IMAS-AL-Python/5.4.3-intel-2023b
+   ✓ Found: IMAS/5.4.3-intel-2023b
+   
+   === Loading IMAS Module ===
+   ✓ Successfully loaded IMAS/5.4.3-intel-2023b
+   
+   === Checking Environment Variables ===
+   ✓ IMAS_HOME = /work/imas
+   ✓ AL_VERSION = 5.4.3
+   
+   === Testing Python Imports ===
+   ✓ imas_core import successful
+   
+   ✓ All critical checks passed!
+
+Using IMAS
+----------
+
+After successful installation and validation:
+
+.. code-block:: bash
+
+   # Load IMAS module
+   module purge
+   module load IMAS/5.4.3-intel-2023b
+   
+   # Test Python bindings
+   python3 -c "import imas_core; print('IMAS ready!')"
+   
+   # Create an alias for convenience
+   echo "alias load-imas='module purge && module load IMAS/5.4.3-intel-2023b'" >> ~/.bashrc
+
+For detailed IMAS installation instructions, troubleshooting, and advanced usage, see :ref:`imas_installation`.
+
+---
+
+Complete Setup Summary
+======================
+
+For a complete EasyBuild + IMAS setup, run all scripts in order:
+
+.. code-block:: bash
+
+   # Step 1: Root bootstrap (as root)
+   sudo bash scripts/01_root_bootstrap.sh
+   
+   # Log out and log back in to activate group membership
+   
+   # Step 2: User bootstrap (as user)
+   bash scripts/02_user_bootstrap.sh
+   
+   # Step 3: Test build (as user)
+   bash scripts/03_build_example.sh
+   
+   # Step 4: Validate base setup (as user)
+   bash scripts/04_validate.sh
+   
+   # Step 5: Install IMAS (as user, requires ITER access)
+   bash scripts/05_install_imas.sh intel 5.4.3
+   
+   # Step 6: Validate IMAS (as user)
+   bash scripts/06_validate_imas.sh intel-2023b 5.4.3
+
+Total time: ~4-6 hours (mostly automated compilation)
+
