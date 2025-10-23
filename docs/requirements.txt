@@ -1,2 +1,2 @@
-sphinx
-sphinx-immaterial
+sphinx>=7.0,<8.0
+sphinx-immaterial<0.12.0

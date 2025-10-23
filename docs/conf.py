@@ -55,7 +55,14 @@ html_theme_options = {
     ],
     "version_dropdown": True,
     "version_json": "../versions.js",
+    "globaltoc_collapse": False,
+    "toc_title_is_page_title": False,
 }
 
 # Disable sphinx_immaterial API doc features that aren't needed
 object_description_options = []
+
+# Explicitly disable synopses feature
+html_context = {
+    "synopses": {},
+}
