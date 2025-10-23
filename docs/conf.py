@@ -62,7 +62,3 @@ html_theme_options = {
 # Disable sphinx_immaterial API doc features that aren't needed
 object_description_options = []
 
-# Explicitly disable synopses feature
-html_context = {
-    "synopses": {},
-}
