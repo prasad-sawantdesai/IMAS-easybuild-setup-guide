@@ -28,6 +28,12 @@ Choose the approach that best fits your needs.
 
 .. toctree::
    :maxdepth: 2
+   :caption: IMAS Installation
+
+   imas_installation
+
+.. toctree::
+   :maxdepth: 2
    :caption: Operations & Reference
 
    operations

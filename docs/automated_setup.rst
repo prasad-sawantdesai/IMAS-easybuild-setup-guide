@@ -15,7 +15,9 @@ This guide describes how to use the provided bootstrap scripts for a quick, auto
 Overview
 ========
 
-The repository includes five bash scripts that automate the entire setup process:
+The repository includes seven bash scripts that automate the entire setup process:
+
+**Base Setup:**
 
 1. **00_init_env.sh** - Environment initialization helper (sources Lmod and sets up paths)
 2. **01_root_bootstrap.sh** - System-level setup (requires root)
@@ -24,6 +26,8 @@ The repository includes five bash scripts that automate the entire setup process
 5. **04_validate.sh** - Comprehensive validation of the installation
 
 These scripts implement the same procedures described in the manual setup documentation but with error handling, validation, and sensible defaults.
+
+**Note:** IMAS installation should be done manually following the instructions in :doc:`imas_installation`.
 
 ---
 
@@ -483,3 +487,34 @@ Comparing Automated vs Manual Setup
      - Learning, custom needs
 
 **Recommendation:** Use automated setup for production systems or when you need quick deployment. Use manual setup when learning EasyBuild or if you need custom configurations not supported by the scripts.
+
+
+---
+
+Complete Setup Summary
+======================
+
+For a complete EasyBuild setup, run all scripts in order:
+
+.. code-block:: bash
+
+   # Step 1: Root bootstrap (as root)
+   sudo bash scripts/01_root_bootstrap.sh
+   
+   # Log out and log back in to activate group membership
+   
+   # Step 2: User bootstrap (as user)
+   bash scripts/02_user_bootstrap.sh
+   
+   # Step 3: Test build (as user)
+   bash scripts/03_build_example.sh
+   
+   # Step 4: Validate base setup (as user)
+   bash scripts/04_validate.sh
+
+Total time: ~1-2 hours (mostly automated compilation)
+
+**For IMAS Installation:**
+
+After completing the base setup, follow the manual installation instructions in :doc:`imas_installation`.
+
