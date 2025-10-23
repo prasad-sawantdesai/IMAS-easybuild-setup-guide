@@ -3,16 +3,27 @@ import datetime
 project = "IMAS EasyBuild Setup Guide"
 copyright = f"{datetime.datetime.now().year}, ITER Organization"
 author = "ITER Organization"
-extensions = ["sphinx.ext.autosectionlabel"]
 html_theme = "sphinx_immaterial"
 html_title = project
+
+extensions = [
+    "sphinx.ext.todo",
+    # "sphinx.ext.autosectionlabel",
+    "sphinx.ext.intersphinx",
+    "sphinx.ext.mathjax",
+    "sphinx_immaterial",
+]
+
+language = "en"
+
 html_theme_options = {
     "repo_url": "https://github.com/prasad-sawantdesai/IMAS-easybuild-setup-guide",
     "repo_name": "EasyBuild Setup Guide",
-    "icon": {
+        "icon": {
         "repo": "fontawesome/brands/github",
     },
-    "font": False,  # Disable Google Fonts to avoid the extension error
+    # "toc_title_is_page_title": True,
+    # "globaltoc_collapse": True,
     "features": [
         # "navigation.expand",
         # "navigation.tabs",
@@ -29,8 +40,6 @@ html_theme_options = {
         # "content.tabs.link",
         "announce.dismiss",
     ],
-    # "toc_title_is_page_title": True,
-    # "globaltoc_collapse": True,
     "palette": [
         {
             "media": "(prefers-color-scheme: light)",
@@ -53,6 +62,11 @@ html_theme_options = {
             },
         },
     ],
-    "version_dropdown": True,
-    "version_json": "../versions.js",
+    "globaltoc_collapse": False,
+    "toc_title_is_page_title": False,
 }
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+
+# Disable sphinx_immaterial API doc features that aren't needed
+object_description_options = []
+

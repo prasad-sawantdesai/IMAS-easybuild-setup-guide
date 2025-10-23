@@ -28,7 +28,7 @@ This guide provides a complete, step-by-step procedure to install and configure 
 │   ├── easybuild_install.rst      # EasyBuild installation guide
 │   ├── config.rst                 # EasyBuild configuration
 │   ├── easyconfigs.rst            # Managing easyconfig files
-│   ├── first_build.rst            # First test build (GCCcore)
+│   ├── first_build.rst            # First test build
 │   ├── operations.rst             # Operational best practices
 │   ├── troubleshooting.rst        # Common issues and solutions
 │   ├── command_log.rst            # Complete command reference
@@ -36,14 +36,16 @@ This guide provides a complete, step-by-step procedure to install and configure 
 │   └── requirements.txt           # Documentation build dependencies
 │
 ├── scripts/                        # Automated setup scripts
+│   ├── 00_init_env.sh             # Environment initialization helper
 │   ├── 01_root_bootstrap.sh       # System-level setup (run as root)
 │   ├── 02_user_bootstrap.sh       # User-level setup (EasyBuild install)
-│   └── 03_build_example.sh        # Test build script (GCCcore 13.2.0)
+│   ├── 03_build_example.sh        # Test build script (EasyBuild module)
+│   └── 04_validate.sh             # Validation script for installation
 │
 ├── .github/workflows/             # CI/CD workflows
-│   └── test-scripts.yml           # GitHub Actions test workflow
+│   ├── test-scripts.yml           # GitHub Actions test workflow
+│   └── sphinx.yaml                # Documentation build and deployment
 │
-├── next_steps                      # Post-installation recommendations
 ├── LICENSE                         # Project license
 └── README.md                       # This file
 ```
@@ -67,6 +69,11 @@ Use the provided scripts for quick installation. See [docs/automated_setup.rst](
 3. **Test the installation**:
    ```bash
    bash scripts/03_build_example.sh
+   ```
+
+4. **Validate the setup** (optional):
+   ```bash
+   bash scripts/04_validate.sh
    ```
 
 ### Option 2: Manual Setup
@@ -134,11 +141,16 @@ Common issues and solutions are documented in [docs/troubleshooting.rst](docs/tr
 
 ## Next Steps
 
-After successful installation, see the [`next_steps`](next_steps) file for:
+After successful installation, consider:
 
-- Adding site-specific easyconfig files
-- Setting up CI validation
-- Maintenance tasks (pruning build directories)
+- **Adding site-specific easyconfig files** - Place them in `/opt/easybuild/local-easyconfigs`
+- **Building additional software** - Use `eb <package>.eb --robot` to build more packages
+- **Updating easyconfigs** - Periodically pull latest configs from upstream
+- **Maintenance tasks** - Clean up temporary build directories in `/opt/easybuild/tmp`
+- **Team collaboration** - Add other users to `easybuildgrp` group
+- **Setting up CI** - Adapt the provided GitHub Actions workflows for your environment
+
+For detailed operational guidance, see the [operations documentation](docs/operations.rst).
 
 ## Testing
 
@@ -150,13 +162,14 @@ The repository includes a GitHub Actions workflow that automatically tests the s
 ### Continuous Integration
 
 The GitHub Actions workflow automatically tests the scripts on:
-- **Rocky Linux 9** - Full installation with test build
-- **Rocky Linux 8** - Installation verification only
+- **Rocky Linux 9** - Full installation with test build and validation
 
 The workflow runs automatically on:
 - Every push to `main` or `develop` branches
 - Every pull request
 - Manual trigger via GitHub Actions UI
+
+See `.github/workflows/test-scripts.yml` for the complete CI configuration.
 
 ## Contributing
 

@@ -43,13 +43,19 @@ msg "Configuring Lmod to see EasyBuild module tree..."
 mkdir -p /etc/lmod/modulespath.d
 echo "$PREFIX/modules/all" > /etc/lmod/modulespath.d/easybuild.path
 
+# Also add to system-wide profile for non-interactive shells
+cat > /etc/profile.d/easybuild_modules.sh <<EOF
+# Add EasyBuild modules to MODULEPATH
+export MODULEPATH="$PREFIX/modules/all\${MODULEPATH:+:\$MODULEPATH}"
+EOF
+chmod +x /etc/profile.d/easybuild_modules.sh
+
 msg "Writing global EasyBuild config to /etc/easybuild.d/easybuild.cfg..."
 mkdir -p /etc/easybuild.d
 cat >/etc/easybuild.d/easybuild.cfg <<'EOF'
 [config]
 prefix = /opt/easybuild
-installpath = %(prefix)s/software
-installpath-modules = %(prefix)s/modules
+installpath = %(prefix)s
 buildpath = %(prefix)s/tmp
 sourcepath = %(prefix)s/src
 repositorypath = %(prefix)s/ebfiles_repo
@@ -59,8 +65,7 @@ group-writable-installdir = True
 modules-tool = Lmod
 module-naming-scheme = EasyBuildMNS
 robot-paths = %(prefix)s/easyconfigs:%(prefix)s/local-easyconfigs
-color = True
-allow-source-as-runtime-dependency = True
+color = auto
 EOF
 
 msg "Root stage complete."

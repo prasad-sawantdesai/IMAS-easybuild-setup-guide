@@ -1,8 +1,8 @@
 .. _easyconfigs:
 
-==============================
+===================================
 Populate EasyConfigs Repository
-==============================
+===================================
 
 Pull upstream easyconfigs then optionally sync into your writable tree.
 

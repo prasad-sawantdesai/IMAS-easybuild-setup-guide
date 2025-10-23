@@ -34,7 +34,7 @@ else
 fi
 
 msg "Syncing upstream easyconfigs into active tree..."
-rsync -a --no-times --omit-dir-times "$UPSTREAM_DIR/easybuild/easyconfigs/" "$PREFIX/easyconfigs/"
+rsync -rl --no-perms --no-owner --no-group --no-times "$UPSTREAM_DIR/easybuild/easyconfigs/" "$PREFIX/easyconfigs/"
 
 msg "Showing EasyBuild config..."
 eb --show-config

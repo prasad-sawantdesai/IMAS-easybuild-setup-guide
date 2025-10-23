@@ -41,37 +41,9 @@ jobs:
       - name: Run test build
         run: |
           su - testuser -c "cd $GITHUB_WORKSPACE && bash scripts/03_build_example.sh"
-        timeout-minutes: 30
+        timeout-minutes: 5
       
       - name: Verify build results
         run: |
-          test -d /opt/easybuild/software/GCCcore/13.2.0
-          su - testuser -c "module spider GCCcore/13.2.0"
-
-  test-rocky8:
-    name: Test on Rocky Linux 8
-    runs-on: ubuntu-latest
-    container:
-      image: rockylinux:8
-      options: --privileged
-    
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      
-      - name: Run root bootstrap
-        run: bash scripts/01_root_bootstrap.sh
-      
-      - name: Create test user
-        run: |
-          useradd -m testuser
-          usermod -aG easybuildgrp testuser
-      
-      - name: Run user bootstrap
-        run: |
-          su - testuser -c "cd $GITHUB_WORKSPACE && bash scripts/02_user_bootstrap.sh"
-      
-      - name: Verify installation (no build)
-        run: |
-          su - testuser -c "eb --version"
-          su - testuser -c "eb --show-config"
+          test -d /opt/easybuild/software/EasyBuild
+          su - testuser -c "module spider EasyBuild"

@@ -1,2 +1,3 @@
-sphinx
-sphinx-immaterial
+# Sphinx and theme
+sphinx<8.0
+sphinx-immaterial>=0.13
