@@ -2,16 +2,9 @@
 # Build sample lightweight modules to validate the pipeline
 set -euo pipefail
 
-# Source Lmod initialization if available
-if [ -f /etc/profile.d/z00_lmod.sh ]; then
-  source /etc/profile.d/z00_lmod.sh
-elif [ -f /usr/share/lmod/lmod/init/bash ]; then
-  source /usr/share/lmod/lmod/init/bash
-fi
-
-# Add EasyBuild modules to MODULEPATH
-PREFIX=${PREFIX:-/opt/easybuild}
-export MODULEPATH="$PREFIX/modules/all${MODULEPATH:+:$MODULEPATH}"
+# Initialize EasyBuild environment
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/00_init_env.sh"
 
 module purge || true
 
@@ -33,4 +26,9 @@ echo ""
 echo "Listing modules..."
 module avail
 echo ""
+echo "Testing module spider..."
 module spider EasyBuild || true
+echo ""
+echo "Testing module load..."
+module load EasyBuild/4.9.0 && echo "✓ EasyBuild module loaded successfully" || echo "✗ Failed to load EasyBuild module"
+module list 2>&1 || true

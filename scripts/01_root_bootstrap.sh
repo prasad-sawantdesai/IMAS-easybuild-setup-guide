@@ -43,6 +43,13 @@ msg "Configuring Lmod to see EasyBuild module tree..."
 mkdir -p /etc/lmod/modulespath.d
 echo "$PREFIX/modules/all" > /etc/lmod/modulespath.d/easybuild.path
 
+# Also add to system-wide profile for non-interactive shells
+cat > /etc/profile.d/easybuild_modules.sh <<EOF
+# Add EasyBuild modules to MODULEPATH
+export MODULEPATH="$PREFIX/modules/all\${MODULEPATH:+:\$MODULEPATH}"
+EOF
+chmod +x /etc/profile.d/easybuild_modules.sh
+
 msg "Writing global EasyBuild config to /etc/easybuild.d/easybuild.cfg..."
 mkdir -p /etc/easybuild.d
 cat >/etc/easybuild.d/easybuild.cfg <<'EOF'
