@@ -11,27 +11,23 @@ Quick reference for installing IMAS (Integrated Modelling & Analysis Suite) usin
 
 ## Quick Start
 
-### Automated Installation (Recommended)
+### Manual Installation
 
-```bash
-# 1. Install IMAS with Intel toolchain
-bash scripts/05_install_imas.sh intel 5.4.3
+Follow the detailed step-by-step instructions in [docs/imas_installation.rst](docs/imas_installation.rst).
 
-# 2. Validate installation
-bash scripts/06_validate_imas.sh intel-2023b 5.4.3
+For a quick reference of all required modules, see [IMAS_MODULES.md](IMAS_MODULES.md).
 
-# 3. Load and use IMAS
-module load IMAS/5.4.3-intel-2023b
-python3 -c "import imas_core; print('IMAS ready!')"
-```
+**Basic installation order:**
 
-### Alternative: FOSS Toolchain
+1. Setup ITER private repository
+2. Install base toolchain (intel-2023b or foss-2023b)
+3. Install IMAS-AL-Core
+4. Install language bindings (Cpp, Fortran, Python, etc.)
+5. Install backend support (MDSplus-models)
+6. Install utilities (IDS-Validator, IDStools)
+7. Install IMAS meta-module
 
-```bash
-# Use open-source FOSS toolchain instead of Intel
-bash scripts/05_install_imas.sh foss 5.4.3
-bash scripts/06_validate_imas.sh foss-2023b 5.4.3
-```
+See the full documentation for detailed commands and troubleshooting.
 
 ## IMAS Modules Overview
 
@@ -39,7 +35,6 @@ The installation includes:
 
 **Core Components:**
 - IMAS-AL-Core - Core library (required)
-- IMAS-AL-Common - Common utilities
 
 **Language Bindings:**
 - IMAS-AL-Cpp - C++ bindings
@@ -49,7 +44,7 @@ The installation includes:
 - IMAS-AL-Matlab - MATLAB bindings (optional)
 
 **Backend Support:**
-- IMAS-AL-HDC - HDF5 Data Container
+- IMAS-AL-Core - Includes HDC (HDF5 Data Container) backend
 - IMAS-AL-MDSplus-models - MDSplus backend
 
 **Utilities:**
@@ -142,7 +137,7 @@ git config --global http.proxy http://proxy:port
 **Solution:**
 ```bash
 # Use more parallel jobs (if you have CPU cores available)
-bash scripts/05_install_imas.sh intel 5.4.3 16
+eb IMAS-AL-Core-5.4.3-intel-2023b.eb --robot --parallel 16
 
 # Or build dependencies separately first
 eb HDF5-1.14.3-intel-2023b.eb --robot --parallel 8

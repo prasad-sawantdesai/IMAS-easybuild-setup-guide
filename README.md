@@ -41,9 +41,7 @@ This guide provides a complete, step-by-step procedure to install and configure 
 │   ├── 01_root_bootstrap.sh       # System-level setup (run as root)
 │   ├── 02_user_bootstrap.sh       # User-level setup (EasyBuild install)
 │   ├── 03_build_example.sh        # Test build script (EasyBuild module)
-│   ├── 04_validate.sh             # Validation script for installation
-│   ├── 05_install_imas.sh         # IMAS installation script
-│   └── 06_validate_imas.sh        # IMAS validation script
+│   └── 04_validate.sh             # Validation script for installation
 │
 ├── .github/workflows/             # CI/CD workflows
 │   ├── test-scripts.yml           # GitHub Actions test workflow
@@ -81,29 +79,9 @@ Use the provided scripts for quick installation. See [docs/automated_setup.rst](
    bash scripts/04_validate.sh
    ```
 
-**IMAS Installation (Optional):**
+**IMAS Installation:**
 
-5. **Install IMAS** (requires ITER git access):
-   ```bash
-   # Install with Intel toolchain
-   bash scripts/05_install_imas.sh intel 5.4.3
-   
-   # Or install with FOSS toolchain
-   bash scripts/05_install_imas.sh foss 5.4.3
-   ```
-
-6. **Validate IMAS installation**:
-   ```bash
-   bash scripts/06_validate_imas.sh intel-2023b 5.4.3
-   ```
-
-7. **Use IMAS**:
-   ```bash
-   module load IMAS/5.4.3-intel-2023b
-   python3 -c "import imas_core; print('IMAS ready!')"
-   ```
-
-See [IMAS_INSTALL.md](IMAS_INSTALL.md) for detailed IMAS installation instructions.
+For IMAS installation, follow the detailed manual instructions in [docs/imas_installation.rst](docs/imas_installation.rst) or see [IMAS_INSTALL.md](IMAS_INSTALL.md) for a quick reference.
 
 ### Option 2: Manual Setup
 

@@ -14,9 +14,6 @@ IMAS consists of multiple Access Layer (AL) components that provide different la
 **Core Components:**
 
 * **IMAS-AL-Core** - Core library providing the foundation for all other components
-* **IMAS-AL-Common** - Common utilities and shared functionality
-* **IDS-Validator** - Validation tools for Interface Data Structures (IDS)
-* **IDStools** - Utility tools for working with IDS
 
 **Language Bindings:**
 
@@ -29,8 +26,12 @@ IMAS consists of multiple Access Layer (AL) components that provide different la
 
 **Data Backend Support:**
 
-* **IMAS-AL-HDC** - HDF5 Data Container backend
 * **IMAS-AL-MDSplus-models** - MDSplus backend models
+
+**Applications:**
+
+* **IDS-Validator** - Validation tools for Interface Data Structures (IDS)
+* **IDStools** - Utility tools for working with IDS
 
 **Complete Suite:**
 
@@ -81,33 +82,6 @@ If you're using SSH authentication:
 
 **Note:** You may need to enter your credentials or configure SSH keys for authentication.
 
-Verify the Clone
-----------------
-
-Check that the repository was cloned successfully:
-
-.. code-block:: bash
-
-   [user] ls -la /opt/easybuild/local-easyconfigs/imas-easyconfigs/
-
-You should see directories for each IMAS component:
-
-.. code-block:: text
-
-   IDS-Validator/
-   IDStools/
-   IMAS/
-   IMAS-AL-Common/
-   IMAS-AL-Core/
-   IMAS-AL-Cpp/
-   IMAS-AL-Fortran/
-   IMAS-AL-HDC/
-   IMAS-AL-Java/
-   IMAS-AL-Matlab/
-   IMAS-AL-MDSplus-models/
-   IMAS-AL-Python/
-   IMAS-Python/
-
 Update Robot Paths
 -------------------
 
@@ -126,92 +100,6 @@ Verify the configuration:
 .. code-block:: bash
 
    [user] eb --show-config | grep robot-paths
-
-Understanding IMAS-AL-Core EasyConfig
-======================================
-
-Let's examine the structure of a typical IMAS easyconfig using ``IMAS-AL-Core`` as an example:
-
-.. code-block:: python
-   :caption: IMAS-AL-Core-5.4.3-intel-2023b.eb
-
-   easyblock = 'CMakePythonPackage'
-
-   name = 'IMAS-AL-Core'
-   version = '5.4.3'
-
-   description = 'IMAS Access Layer core library'
-   homepage = 'https://imas.iter.org/'
-
-   toolchain = {'name': 'intel', 'version': '2023b'}
-
-   builddependencies = [
-       ('CMake', '3.27.6'),
-       ('Ninja', '1.11.1'),
-       ('scikit-build-core', '0.9.3'),
-       ('Cython', '3.0.10'),
-       ('cython-cmake', '0.2.0'),
-   ]
-
-   dependencies = [
-       ('HDF5', '1.14.3'),
-       ('MDSplus', '7.132.0'),
-       ('UDA', '2.8.0'),
-       ('Boost', '1.83.0'),
-       ('SciPy-bundle', '2023.12'),
-   ]
-
-   source_urls = ['https://git.iter.org/rest/api/latest/projects/IMAS/repos/al-core/archive'
-                  '?at=tags/%(version)s&format=tar.gz&filename=']
-   sources = ['al-core-%(version)s.tar.gz']
-   checksums = ['c6bb8319e92c59184701de85d68479d4a63c8ad44d8d72a57b3b192349a4a801']
-
-   build_type = 'RelWithDebInfo'
-   configopts = (
-       # Don't download dependencies
-       '-D AL_DOWNLOAD_DEPENDENCIES=OFF '
-       # Enable all backends
-       '-D AL_BACKEND_HDF5=ON '
-       '-D AL_BACKEND_MDSPLUS=ON '
-       '-D AL_BACKEND_UDA=ON '
-       # Don't build MDSplus models
-       '-D AL_BUILD_MDSPLUS_MODELS=OFF '
-       # Build Python bindings
-       '-D AL_PYTHON_BINDINGS=ON '
-       # Don't build tests and examples
-       '-D AL_EXAMPLES=OFF '
-       '-D AL_TESTS=OFF '
-       '-D AL_PYTHON_BINDINGS=no-build-isolation '
-   )
-
-   options = {'modulename': 'imas_core'}
-   sanity_check_paths = {
-       'dirs': ['lib', 'include'],
-       'files': [],
-   }
-
-   moduleclass = 'tools'
-
-   modextrapaths = {
-       'AL_COMMON_PATH': 'share/common',
-   }
-
-   modextravars = {
-       'IMAS_HOME': '/work/imas',
-       'AL_VERSION': '%(version)s',
-       'HDF5_USE_FILE_LOCKING': 'FALSE',
-       'IMAS_LOCAL_HOSTS': 'uda.iter.org',
-   }
-
-**Key Configuration Elements:**
-
-* **easyblock**: Uses ``CMakePythonPackage`` for CMake-based builds with Python bindings
-* **toolchain**: Specifies compiler toolchain (intel-2023b or foss-2023b)
-* **builddependencies**: Build-time only dependencies (CMake, Ninja, etc.)
-* **dependencies**: Runtime dependencies (HDF5, MDSplus, UDA, Boost, SciPy)
-* **source_urls**: Downloads source from ITER git repository
-* **configopts**: CMake configuration options for backends and features
-* **modextravars**: Environment variables set when module is loaded
 
 Creating IMAS Work Directory
 =============================
@@ -287,9 +175,8 @@ Installation Order
 
 IMAS modules have a specific dependency hierarchy. Install them in this order:
 
-1. **IMAS-AL-Common** - Common utilities (if available as separate module)
-2. **IMAS-AL-Core** - Core library (required by all other components)
-3. **Language-specific bindings** (as needed):
+1. **IMAS-AL-Core** - Core library (required by all other components)
+2. **Language-specific bindings** (as needed):
    
    * IMAS-AL-Cpp
    * IMAS-AL-Fortran
@@ -299,7 +186,6 @@ IMAS modules have a specific dependency hierarchy. Install them in this order:
 
 4. **Backend support**:
    
-   * IMAS-AL-HDC
    * IMAS-AL-MDSplus-models
 
 5. **Utility tools**:
@@ -375,17 +261,13 @@ Install the language bindings you need:
 Install Backend Support
 ------------------------
 
-**HDC backend:**
-
-.. code-block:: bash
-
-   [user] eb IMAS-AL-HDC-5.4.3-intel-2023b.eb --robot --parallel 8
-
 **MDSplus models:**
 
 .. code-block:: bash
 
    [user] eb IMAS-AL-MDSplus-models-5.4.3-intel-2023b.eb --robot --parallel 8
+
+**Note:** HDF5 Data Container (HDC) backend is included in IMAS-AL-Core and doesn't require a separate module.
 
 Install Utility Tools
 ---------------------
@@ -418,70 +300,6 @@ Finally, install the IMAS meta-module that loads the complete environment:
    [user] eb IMAS-5.4.3-intel-2023b.eb --robot --parallel 8
 
 This module will load all IMAS components in the correct order.
-
-Automated Installation Script
-==============================
-
-For convenience, you can install all IMAS modules with a single script:
-
-.. code-block:: bash
-   :caption: scripts/05_install_imas.sh
-
-   #!/bin/bash
-   # Install complete IMAS suite with intel-2023b toolchain
-   
-   set -e  # Exit on error
-   
-   TOOLCHAIN="intel-2023b"
-   VERSION="5.4.3"
-   PARALLEL_JOBS=8
-   
-   # Array of IMAS modules in installation order
-   IMAS_MODULES=(
-       "IMAS-AL-Core-${VERSION}-${TOOLCHAIN}.eb"
-       "IMAS-AL-Cpp-${VERSION}-${TOOLCHAIN}.eb"
-       "IMAS-AL-Fortran-${VERSION}-${TOOLCHAIN}.eb"
-       "IMAS-AL-Python-${VERSION}-${TOOLCHAIN}.eb"
-       "IMAS-AL-HDC-${VERSION}-${TOOLCHAIN}.eb"
-       "IMAS-AL-MDSplus-models-${VERSION}-${TOOLCHAIN}.eb"
-       "IDS-Validator-${VERSION}-${TOOLCHAIN}.eb"
-       "IDStools-${VERSION}-${TOOLCHAIN}.eb"
-       "IMAS-Python-${VERSION}-${TOOLCHAIN}.eb"
-       "IMAS-${VERSION}-${TOOLCHAIN}.eb"
-   )
-   
-   echo "=== IMAS Installation Script ==="
-   echo "Toolchain: ${TOOLCHAIN}"
-   echo "Version: ${VERSION}"
-   echo "Parallel jobs: ${PARALLEL_JOBS}"
-   echo ""
-   
-   # Load EasyBuild
-   module purge
-   module load EasyBuild
-   
-   # Install each module
-   for MODULE in "${IMAS_MODULES[@]}"; do
-       echo "=== Installing ${MODULE} ==="
-       if eb "${MODULE}" --robot --parallel "${PARALLEL_JOBS}"; then
-           echo "✓ Successfully installed ${MODULE}"
-       else
-           echo "✗ Failed to install ${MODULE}"
-           exit 1
-       fi
-       echo ""
-   done
-   
-   echo "=== IMAS Installation Complete ==="
-   echo "Available modules:"
-   module avail IMAS
-
-Save this script and make it executable:
-
-.. code-block:: bash
-
-   [user] chmod +x scripts/05_install_imas.sh
-   [user] ./scripts/05_install_imas.sh
 
 Verifying IMAS Installation
 ============================
@@ -539,51 +357,6 @@ Run the test:
 .. code-block:: bash
 
    [user] python3 test_imas.py
-
-Permissions and Access Control
-===============================
-
-Group Permissions
------------------
-
-Ensure all IMAS installations are group-writable:
-
-.. code-block:: bash
-
-   [root] find /opt/easybuild/software/IMAS* -type d -exec chmod 2775 {} \;
-   [root] find /opt/easybuild/software/IMAS* -type f -exec chmod g+w {} \;
-
-Add Users to EasyBuild Group
------------------------------
-
-Users who need to build or modify IMAS modules should be in the ``easybuildgrp``:
-
-.. code-block:: bash
-
-   [root] usermod -aG easybuildgrp username
-
-Creating IMAS User Profiles
-----------------------------
-
-Create a profile script for easy IMAS loading:
-
-.. code-block:: bash
-   :caption: /etc/profile.d/imas.sh
-
-   #!/bin/bash
-   # IMAS module environment setup
-   
-   # Add this to your .bashrc or source it manually
-   alias load-imas='module purge && module load IMAS/5.4.3-intel-2023b'
-   
-   export IMAS_VERSION="5.4.3"
-   export IMAS_TOOLCHAIN="intel-2023b"
-
-Users can then simply run:
-
-.. code-block:: bash
-
-   [user] load-imas
 
 Alternative: Using FOSS Toolchain
 ==================================
@@ -780,23 +553,6 @@ Permission Errors
    
    # User must log out and back in for group change to take effect
 
-Next Steps
-==========
-
-After successfully installing IMAS, you can:
-
-1. **Set up user environments** - Create module profiles for easy access
-2. **Test IMAS functionality** - Run IMAS test cases and examples
-3. **Integrate with workflows** - Use IMAS in your simulation pipelines
-4. **Monitor performance** - Profile IMAS applications for optimization
-5. **Set up data storage** - Configure IMAS data backends (HDF5, MDSplus, UDA)
-
-For advanced usage, refer to:
-
-* IMAS official documentation: https://imas.iter.org/
-* ITER technical documentation and user guides
-* IMAS training materials and tutorials
-
 Complete Module List for IMAS Setup
 ====================================
 
@@ -831,7 +587,6 @@ For reference, here's the complete list of modules typically required for a full
 * IMAS-AL-Python-5.4.3
 * IMAS-AL-Java-5.4.3 (optional)
 * IMAS-AL-Matlab-5.4.3 (optional)
-* IMAS-AL-HDC-5.4.3
 * IMAS-AL-MDSplus-models-5.4.3
 * IDS-Validator-5.4.3
 * IDStools-5.4.3
