@@ -59,7 +59,7 @@ group-writable-installdir = True
 modules-tool = Lmod
 module-naming-scheme = EasyBuildMNS
 robot-paths = %(prefix)s/easyconfigs:%(prefix)s/local-easyconfigs
-color = True
+color = auto
 EOF
 
 msg "Root stage complete."
