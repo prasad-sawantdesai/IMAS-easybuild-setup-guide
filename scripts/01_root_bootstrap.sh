@@ -48,8 +48,7 @@ mkdir -p /etc/easybuild.d
 cat >/etc/easybuild.d/easybuild.cfg <<'EOF'
 [config]
 prefix = /opt/easybuild
-installpath = %(prefix)s/software
-installpath-modules = %(prefix)s/modules
+installpath = %(prefix)s
 buildpath = %(prefix)s/tmp
 sourcepath = %(prefix)s/src
 repositorypath = %(prefix)s/ebfiles_repo

@@ -46,6 +46,6 @@ jobs:
       - name: Verify build results
         run: |
           test -d /opt/easybuild/software/EasyBuild
-          test -d /opt/easybuild/software/bzip2
+          test -d /opt/easybuild/software/help2man
           su - testuser -c "module spider EasyBuild"
-          su - testuser -c "module spider bzip2"
+          su - testuser -c "module spider help2man"
