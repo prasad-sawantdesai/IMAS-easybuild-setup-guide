@@ -1,4 +1,4 @@
-.. _prerequisites:
+.. _prerequisites_page:
 
 ================
 Prerequisites

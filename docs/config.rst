@@ -1,8 +1,8 @@
 .. _config:
 
-=============================
+==================================
 Global EasyBuild Configuration
-=============================
+==================================
 
 Create `/etc/easybuild.d/easybuild.cfg` (all paths inside `/opt/easybuild` which is group-writable).
 

@@ -140,8 +140,8 @@ Before running this script, verify you're in the correct group:
 
 If the group doesn't appear, you need to log out and log back in.
 
-Script output
--------------
+User bootstrap output
+---------------------
 
 .. code-block:: text
 
