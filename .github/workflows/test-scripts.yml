@@ -41,9 +41,11 @@ jobs:
       - name: Run test build
         run: |
           su - testuser -c "cd $GITHUB_WORKSPACE && bash scripts/03_build_example.sh"
-        timeout-minutes: 30
+        timeout-minutes: 10
       
       - name: Verify build results
         run: |
-          test -d /opt/easybuild/software/GCCcore/13.2.0
-          su - testuser -c "module spider GCCcore/13.2.0"
+          test -d /opt/easybuild/software/EasyBuild
+          test -d /opt/easybuild/software/bzip2
+          su - testuser -c "module spider EasyBuild"
+          su - testuser -c "module spider bzip2"
