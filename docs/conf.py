@@ -12,6 +12,7 @@ html_theme_options = {
     "icon": {
         "repo": "fontawesome/brands/github",
     },
+    "font": False,  # Disable Google Fonts to avoid the extension error
     "features": [
         # "navigation.expand",
         # "navigation.tabs",
