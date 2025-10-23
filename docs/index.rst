@@ -14,3 +14,4 @@ IMAS EasyBuild setup guide
    first_build
    operations
    troubleshooting
+   command_log
