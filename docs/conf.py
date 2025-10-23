@@ -56,3 +56,6 @@ html_theme_options = {
     "version_dropdown": True,
     "version_json": "../versions.js",
 }
+
+# Disable sphinx_immaterial API doc features that aren't needed
+object_description_options = []
