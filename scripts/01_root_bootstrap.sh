@@ -60,7 +60,6 @@ modules-tool = Lmod
 module-naming-scheme = EasyBuildMNS
 robot-paths = %(prefix)s/easyconfigs:%(prefix)s/local-easyconfigs
 color = True
-allow-source-as-runtime-dependency = True
 EOF
 
 msg "Root stage complete."
