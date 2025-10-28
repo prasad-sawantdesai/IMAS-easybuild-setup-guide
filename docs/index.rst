@@ -1,10 +1,11 @@
 IMAS EasyBuild setup guide
 ==========================
 
-This guide provides two approaches to set up EasyBuild and Lmod on RHEL-based systems:
+This guide provides three approaches to set up EasyBuild and Lmod on RHEL-based systems:
 
-1. **Automated Setup** - Use provided scripts for quick installation (recommended for most users)
-2. **Manual Setup** - Step-by-step instructions for learning and custom configurations
+1. **Userspace Setup** - No root access required! Install entirely in your home directory (recommended for users without admin access)
+2. **Automated System-wide Setup** - Use provided scripts for quick system-wide installation (recommended for administrators)
+3. **Manual Setup** - Step-by-step instructions for learning and custom configurations
 
 Choose the approach that best fits your needs.
 
@@ -13,6 +14,7 @@ Choose the approach that best fits your needs.
    :caption: Getting Started
 
    prerequisites
+   userspace_setup
    automated_setup
 
 .. toctree::

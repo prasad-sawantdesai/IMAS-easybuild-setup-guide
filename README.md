@@ -4,58 +4,63 @@ A reproducible guide for setting up **EasyBuild** and **IMAS software stack** on
 
 ## Overview
 
-This guide provides a complete, step-by-step procedure to install and configure EasyBuild 4.x with Lmod on RHEL-based systems, plus complete IMAS (Integrated Modelling & Analysis Suite) installation. It includes system-wide setup instructions, automated bootstrap scripts, and comprehensive documentation for building and managing software modules.
+This guide provides complete procedures to install and configure EasyBuild 4.x with Lmod on RHEL-based systems, plus complete IMAS (Integrated Modelling & Analysis Suite) installation. It supports both **userspace installation** (no root required) and **system-wide installation** (for administrators).
 
 ## Features
 
-- **System-wide EasyBuild installation** under `/opt/easybuild`
-- **Lmod integration** for environment module management
-- **Group-based permissions** for collaborative builds
-- **Automated bootstrap scripts** for quick setup
-- **IMAS installation support** with private ITER repository integration
-- **Comprehensive documentation** with Sphinx
+- **🏠 Userspace installation** - No root access needed! Install in your home directory
+- **🖥️ System-wide installation** - Traditional setup under `/opt/easybuild` for shared systems
+- **📦 Lmod integration** for environment module management
+- **👥 Group-based permissions** for collaborative builds (system-wide only)
+- **🤖 Automated bootstrap scripts** for quick setup
+- **🔬 IMAS installation support** with private ITER repository integration
+- **📚 Comprehensive documentation** with Sphinx
 - Clear separation of root and user operations
-
-## Repository Structure
-
-```
-.
-├── docs/                           # Sphinx documentation
-│   ├── index.rst                  # Documentation homepage
-│   ├── prerequisites.rst          # System requirements and user model
-│   ├── automated_setup.rst        # Automated setup using scripts
-│   ├── filesystem.rst             # Directory layout and permissions
-│   ├── lmod.rst                   # Lmod installation and configuration
-│   ├── easybuild_install.rst      # EasyBuild installation guide
-│   ├── config.rst                 # EasyBuild configuration
-│   ├── easyconfigs.rst            # Managing easyconfig files
-│   ├── first_build.rst            # First test build
-│   ├── operations.rst             # Operational best practices
-│   ├── troubleshooting.rst        # Common issues and solutions
-│   ├── command_log.rst            # Complete command reference
-│   ├── conf.py                    # Sphinx configuration
-│   └── requirements.txt           # Documentation build dependencies
-│
-├── scripts/                        # Automated setup scripts
-│   ├── 00_init_env.sh             # Environment initialization helper
-│   ├── 01_root_bootstrap.sh       # System-level setup (run as root)
-│   ├── 02_user_bootstrap.sh       # User-level setup (EasyBuild install)
-│   ├── 03_build_example.sh        # Test build script (EasyBuild module)
-│   └── 04_validate.sh             # Validation script for installation
-│
-├── .github/workflows/             # CI/CD workflows
-│   ├── test-scripts.yml           # GitHub Actions test workflow
-│   └── sphinx.yaml                # Documentation build and deployment
-│
-├── LICENSE                         # Project license
-└── README.md                       # This file
-```
 
 ## Quick Start
 
-### Option 1: Automated Setup (Recommended)
+> 🚀 **New User?** See [USERSPACE_QUICKSTART.md](USERSPACE_QUICKSTART.md) for the fastest way to get started without root access!
+> 
+> 🤔 **Not sure which method?** See [INSTALLATION_GUIDE.md](INSTALLATION_GUIDE.md) for a decision tree to help you choose.
 
-Use the provided scripts for quick installation. See [docs/automated_setup.rst](docs/automated_setup.rst) for full details.
+### Option 1: Userspace Installation (No Root Required) ⭐ NEW!
+
+Perfect for users without administrative access or personal installations.
+
+```bash
+# Clone the repository
+git clone https://github.com/prasad-sawantdesai/IMAS-easybuild-setup-guide.git
+cd IMAS-easybuild-setup-guide
+
+# Run userspace bootstrap (installs to ~/easybuild)
+bash scripts/10_userspace_bootstrap.sh
+
+# Reload environment
+source ~/.bashrc
+
+# Test the installation
+bash scripts/11_userspace_test_build.sh
+
+# Start using EasyBuild!
+eb --search GCC
+eb GCC-12.2.0.eb --robot
+```
+
+**Key advantages:**
+- ✅ No root/sudo required
+- ✅ No group management needed
+- ✅ Install in 5-10 minutes
+- ✅ Full control over your environment
+- ✅ Can still share modules with others
+- ✅ Easy to remove (just delete directory)
+
+See [docs/userspace_setup.rst](docs/userspace_setup.rst) for full details.
+
+---
+
+### Option 2: System-wide Automated Setup (Requires Root)
+
+Use the provided scripts for system-wide installation. Recommended for administrators managing shared systems.
 
 **Base EasyBuild Setup:**
 
@@ -83,11 +88,24 @@ Use the provided scripts for quick installation. See [docs/automated_setup.rst](
 
 For IMAS installation, follow the detailed manual instructions in [docs/imas_installation.rst](docs/imas_installation.rst) or see [IMAS_INSTALL.md](IMAS_INSTALL.md) for a quick reference.
 
-### Option 2: Manual Setup
+**When to use which approach:**
+- **Userspace**: No root access, personal use, testing, quick setup
+- **System-wide Automated**: Production deployments with multiple users, standard configurations
+- **Manual**: Learning EasyBuild, custom configurations, non-standard requirements
+
+---
+
+### Option 3: Manual Setup
 
 Follow the detailed step-by-step documentation in the `docs/` directory:
 
-**Base EasyBuild Setup:**
+**Userspace Setup:**
+
+1. Review [Prerequisites](docs/prerequisites.rst)
+2. Follow [Userspace Setup Guide](docs/userspace_setup.rst)
+3. Start building software!
+
+**System-wide Setup:**
 
 1. Review [Prerequisites](docs/prerequisites.rst)
 2. Set up [Filesystem Layout](docs/filesystem.rst)
@@ -100,6 +118,23 @@ Follow the detailed step-by-step documentation in the `docs/` directory:
 **IMAS Installation:**
 
 8. Follow [IMAS Installation Guide](docs/imas_installation.rst) for complete IMAS setup
+
+---
+
+## Installation Comparison
+
+| Feature | Userspace | System-wide |
+|---------|-----------|-------------|
+| Root access needed | ❌ No | ✅ Yes (initial) |
+| Setup time | 5-10 min | 10-15 min |
+| Location | `~/easybuild` | `/opt/easybuild` |
+| Group management | ❌ Not needed | ✅ Required |
+| Multi-user by default | ❌ No | ✅ Yes |
+| Module sharing | Manual | Automatic |
+| Easy removal | ✅ Just delete dir | Requires root |
+| Best for | Personal, testing | Production, teams |
+
+---
 
 **When to use which approach:**
 - **Automated**: Production deployments, quick setup, standard configurations
@@ -119,6 +154,13 @@ View the generated documentation at `docs/_build/html/index.html`.
 
 ## Key Concepts
 
+**Userspace Installation:**
+- **No root**: Everything installs in your home directory
+- **No groups**: File ownership is yours alone
+- **Independence**: Full control without administrator involvement
+- **Sharing**: Optional - make directories readable to share modules
+
+**System-wide Installation:**
 - **Root operations**: System package installation, directory creation, permission setup
 - **User operations**: EasyBuild installation, running builds, module management
 - **Group model**: Users in `easybuildgrp` can collaboratively build software
@@ -133,7 +175,17 @@ View the generated documentation at `docs/_build/html/index.html`.
 
 ## Configuration
 
-The default configuration uses:
+**Userspace installation defaults:**
+
+- **Install prefix**: `~/easybuild` (customizable with `PREFIX` env var)
+- **Software**: `~/easybuild/software`
+- **Modules**: `~/easybuild/modules`
+- **Source cache**: `~/easybuild/src`
+- **Build temp**: `~/easybuild/tmp`
+- **Module tool**: Lmod (or EnvironmentModules)
+- **No group needed**: Files owned by you
+
+**System-wide installation defaults:**
 
 - **Install prefix**: `/opt/easybuild`
 - **Software**: `/opt/easybuild/software`

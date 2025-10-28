@@ -1,10 +1,13 @@
 .. _automated_setup:
 
-==================
-Automated Setup
-==================
+==================================
+Automated Setup (System-wide)
+==================================
 
-This guide describes how to use the provided bootstrap scripts for a quick, automated installation of EasyBuild and Lmod. This is the recommended approach for new installations.
+This guide describes how to use the provided bootstrap scripts for a quick, automated **system-wide** installation of EasyBuild and Lmod. This approach requires root access and sets up a shared installation for multiple users.
+
+.. note::
+   **Looking for a no-root solution?** See :doc:`userspace_setup` for installing EasyBuild entirely in your home directory without requiring administrative privileges.
 
 .. contents:: Page index
    :local:
@@ -486,7 +489,11 @@ Comparing Automated vs Manual Setup
      - Production, quick setup
      - Learning, custom needs
 
-**Recommendation:** Use automated setup for production systems or when you need quick deployment. Use manual setup when learning EasyBuild or if you need custom configurations not supported by the scripts.
+**Recommendation:** 
+
+* Use **userspace setup** (:doc:`userspace_setup`) if you don't have root access or want a personal installation
+* Use **automated system-wide setup** (this guide) for production systems with multiple users
+* Use **manual setup** when learning EasyBuild or if you need custom configurations not supported by the scripts
 
 
 ---
