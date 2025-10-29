@@ -9,48 +9,26 @@ Once the EasyBuild setup is working, you can proceed to install IMAS (Integrated
 Overview of IMAS Modules
 =========================
 
-IMAS consists of multiple Access Layer (AL) components that provide different language bindings and functionality:
+IMAS consists of multiple Access Layer (AL) components. This guide demonstrates installation using **IMAS-AL-Fortran** as an example.
 
-**Core Components:**
+**Key Components:**
 
-* **IMAS-AL-Core** - Core library providing the foundation for all other components
+* **IMAS-AL-Core** - Core library (required dependency for all other components)
+* **IMAS-AL-Fortran** - Fortran language bindings (example module)
+* **IMAS-AL-MDSplus-models** - MDSplus backend models (required for data access)
+* **Data-Dictionary** - IMAS data structure definitions
 
-**Language Bindings:**
-
-* **IMAS-AL-Cpp** - C++ language bindings
-* **IMAS-AL-Fortran** - Fortran language bindings
-* **IMAS-AL-Java** - Java language bindings
-* **IMAS-AL-Matlab** - MATLAB language bindings
-* **IMAS-AL-Python** - Python language bindings
-* **IMAS-Python** - Additional Python utilities
-
-**Data Backend Support:**
-
-* **IMAS-AL-MDSplus-models** - MDSplus backend models
-
-**Applications:**
-
-* **IDS-Validator** - Validation tools for Interface Data Structures (IDS)
-* **IDStools** - Utility tools for working with IDS
-
-**Complete Suite:**
-
-* **IMAS** - Meta-module that loads the complete IMAS environment
+The same installation process applies to other IMAS language bindings (Python, C++, Java, MATLAB).
 
 Toolchain Versions
 ==================
 
-IMAS modules are available for different toolchains, primarily:
+IMAS modules are available for different toolchains:
 
 * **foss-2023b** - Free Open Source Software compiler toolchain (GCC-based)
-* **intel-2023b** - Intel compiler toolchain
+* **intel-2023b** - Intel compiler toolchain (used in this guide)
 
-Example naming convention:
-
-* ``IMAS-AL-Core-5.4.3-foss-2023b.eb``
-* ``IMAS-AL-Core-5.4.3-intel-2023b.eb``
-
-Choose the toolchain that best fits your needs. The ``foss`` toolchain is more portable and open, while ``intel`` may offer better performance on Intel hardware.
+Example: ``IMAS-AL-Fortran-5.4.0-intel-2023b-DD-3.42.0.eb``
 
 Setting Up ITER Private Repository
 ====================================
@@ -117,217 +95,188 @@ This directory is referenced by the ``IMAS_HOME`` environment variable in the mo
 Installing IMAS Dependencies
 ==============================
 
-Before installing IMAS modules, ensure all required dependencies are available. The main dependencies include:
+Understanding Dependencies from EasyConfig Files
+------------------------------------------------
 
-Build the Base Toolchain
+Before installing, examine the EasyConfig file to understand dependencies. For ``IMAS-AL-Fortran-5.4.0-intel-2023b-DD-3.42.0.eb``:
+
+.. code-block:: python
+
+   builddependencies = [
+       ('CMake', '3.27.6'),
+       ('Saxon-HE', '12.4', '-Java-21', SYSTEM),
+   ]
+   
+   dependencies = [
+       ('IMAS-AL-Core', '5.4.3'),
+       ('IMAS-AL-MDSplus-models', '5.2.2', '-DD-3.39.0'),
+   ]
+
+This shows:
+
+* **Build dependencies**: Required only during build (CMake, Saxon-HE)
+* **Runtime dependencies**: Required for the module to function (IMAS-AL-Core, IMAS-AL-MDSplus-models)
+
+IMAS-AL-Core Dependencies
 --------------------------
 
-First, install the chosen toolchain (intel-2023b or foss-2023b):
+The core library (``IMAS-AL-Core-5.4.3-intel-2023b.eb``) requires:
+
+.. code-block:: python
+
+   builddependencies = [
+       ('CMake', '3.27.6'),
+       ('Ninja', '1.11.1'),
+       ('scikit-build-core', '0.9.3'),
+       ('Cython', '3.0.10'),
+       ('cython-cmake', '0.2.0'),
+   ]
+   
+   dependencies = [
+       ('HDF5', '1.14.3'),
+       ('MDSplus', '7.132.0'),
+       ('UDA', '2.8.0'),
+       ('Boost', '1.83.0'),
+       ('SciPy-bundle', '2023.12'),
+   ]
+
+IMAS-AL-MDSplus-models Dependencies
+------------------------------------
+
+The MDSplus models (``IMAS-AL-MDSplus-models-5.2.2-intel-2023b-DD-3.39.0.eb``) require:
+
+.. code-block:: python
+
+   builddependencies = [
+       ('CMake', '3.27.6'),
+       ('IMAS-AL-Core', '5.4.1'),
+       ('MDSplus', '7.132.0'),
+       ('Saxon-HE', '12.4', '-Java-21', SYSTEM),
+   ]
+   
+   dependencies = [
+       ('Data-Dictionary', '3.39.0'),
+   ]
+
+Install Dependencies with EasyBuild
+------------------------------------
+
+**Option 1: Automatic dependency resolution** (Recommended)
+
+Let EasyBuild resolve and build all dependencies automatically:
 
 .. code-block:: bash
 
-   # For Intel toolchain
-   [user] eb intel-2023b.eb --robot --parallel 8
-
-   # OR for FOSS toolchain
-   [user] eb foss-2023b.eb --robot --parallel 8
-
-**Note:** This will take considerable time (1-2 hours) as it builds the complete compiler toolchain.
-
-Install Core Dependencies
---------------------------
-
-Install the dependencies required by IMAS-AL-Core:
-
-.. code-block:: bash
-
-   [user] module purge
    [user] module load EasyBuild
-   
-   # Install HDF5
-   [user] eb HDF5-1.14.3-intel-2023b.eb --robot --parallel 8
-   
-   # Install MDSplus
-   [user] eb MDSplus-7.132.0-intel-2023b.eb --robot --parallel 8
-   
-   # Install UDA (if available in repository)
-   [user] eb UDA-2.8.0-intel-2023b.eb --robot --parallel 8
-   
-   # Install Boost
-   [user] eb Boost-1.83.0-intel-2023b.eb --robot --parallel 8
-   
-   # Install SciPy-bundle (includes NumPy, SciPy, etc.)
-   [user] eb SciPy-bundle-2023.12-intel-2023b.eb --robot --parallel 8
+   [user] eb IMAS-AL-Fortran-5.4.0-intel-2023b-DD-3.42.0.eb --robot --parallel 8
 
-**Alternative:** Let EasyBuild resolve dependencies automatically:
+The ``--robot`` flag enables automatic dependency resolution. EasyBuild will:
+
+1. Parse the dependency tree
+2. Build missing dependencies in the correct order
+3. Install IMAS-AL-Fortran
+
+**Option 2: Dry-run to preview** (Review before building)
 
 .. code-block:: bash
 
-   [user] eb IMAS-AL-Core-5.4.3-intel-2023b.eb --robot --parallel 8 --dry-run
+   [user] eb IMAS-AL-Fortran-5.4.0-intel-2023b-DD-3.42.0.eb --robot --dry-run
 
-This will show you all missing dependencies that will be built.
+This shows all modules that will be built without actually building them.
+
+**Option 3: Manual dependency installation** (For troubleshooting)
 
 Installing IMAS Modules
 ========================
 
-Installation Order
-------------------
+Installation Order and Dependencies
+------------------------------------
 
-IMAS modules have a specific dependency hierarchy. Install them in this order:
+IMAS modules have a specific dependency hierarchy:
 
-1. **IMAS-AL-Core** - Core library (required by all other components)
-2. **Language-specific bindings** (as needed):
-   
-   * IMAS-AL-Cpp
-   * IMAS-AL-Fortran
-   * IMAS-AL-Python
-   * IMAS-AL-Java
-   * IMAS-AL-Matlab
+1. **IMAS-AL-Core** - Core library (foundation for all components)
+2. **IMAS-AL-MDSplus-models** - Backend support (depends on IMAS-AL-Core)
+3. **IMAS-AL-Fortran** - Fortran bindings (depends on both above)
 
-4. **Backend support**:
-   
-   * IMAS-AL-MDSplus-models
+Install IMAS-AL-Fortran with Dependencies
+------------------------------------------
 
-5. **Utility tools**:
-   
-   * IDS-Validator
-   * IDStools
-   * IMAS-Python
-
-6. **IMAS meta-module** - Loads complete environment
-
-Install IMAS-AL-Core
---------------------
-
-Start with the core library:
+The simplest method is to let EasyBuild handle all dependencies:
 
 .. code-block:: bash
 
    [user] module purge
    [user] module load EasyBuild
+   [user] eb IMAS-AL-Fortran-5.4.0-intel-2023b-DD-3.42.0.eb --robot --parallel 8
+
+This single command will:
+
+1. Check for missing dependencies
+2. Build the intel-2023b toolchain (if needed)
+3. Build all required libraries (HDF5, MDSplus, UDA, Boost, SciPy-bundle, etc.)
+4. Build IMAS-AL-Core
+5. Build Data-Dictionary
+6. Build IMAS-AL-MDSplus-models
+7. Build IMAS-AL-Fortran
+
+**Note:** First-time installation may take 1-3 hours depending on your system.
+
+Manual Step-by-Step Installation
+---------------------------------
+
+If you prefer to install dependencies manually or need to troubleshoot:
+
+**Step 1: Install the toolchain**
+
+.. code-block:: bash
+
+   [user] eb intel-2023b.eb --robot --parallel 8
+
+**Step 2: Install IMAS-AL-Core**
+
+.. code-block:: bash
+
    [user] eb IMAS-AL-Core-5.4.3-intel-2023b.eb --robot --parallel 8
 
-Monitor the build process. This will:
-
-* Download source from ITER git repository
-* Build all dependencies (if not already installed)
-* Compile IMAS-AL-Core with CMake
-* Install to ``/opt/easybuild/software/IMAS-AL-Core/5.4.3-intel-2023b/``
-* Create module file at ``/opt/easybuild/modules/all/IMAS-AL-Core/5.4.3-intel-2023b``
-
-Verify the installation:
+**Step 3: Install IMAS-AL-MDSplus-models**
 
 .. code-block:: bash
 
-   [user] module avail IMAS-AL-Core
-   [user] module load IMAS-AL-Core/5.4.3-intel-2023b
-   [user] module list
+   [user] eb IMAS-AL-MDSplus-models-5.2.2-intel-2023b-DD-3.39.0.eb --robot --parallel 8
 
-Install Language Bindings
---------------------------
-
-Install the language bindings you need:
-
-**Python bindings:**
+**Step 4: Install IMAS-AL-Fortran**
 
 .. code-block:: bash
 
-   [user] eb IMAS-AL-Python-5.4.3-intel-2023b.eb --robot --parallel 8
-
-**C++ bindings:**
-
-.. code-block:: bash
-
-   [user] eb IMAS-AL-Cpp-5.4.3-intel-2023b.eb --robot --parallel 8
-
-**Fortran bindings:**
-
-.. code-block:: bash
-
-   [user] eb IMAS-AL-Fortran-5.4.3-intel-2023b.eb --robot --parallel 8
-
-**Java bindings (if needed):**
-
-.. code-block:: bash
-
-   [user] eb IMAS-AL-Java-5.4.3-intel-2023b.eb --robot --parallel 8
-
-**MATLAB bindings (if needed):**
-
-.. code-block:: bash
-
-   [user] eb IMAS-AL-Matlab-5.4.3-intel-2023b.eb --robot --parallel 8
-
-Install Backend Support
-------------------------
-
-**MDSplus models:**
-
-.. code-block:: bash
-
-   [user] eb IMAS-AL-MDSplus-models-5.4.3-intel-2023b.eb --robot --parallel 8
-
-**Note:** HDF5 Data Container (HDC) backend is included in IMAS-AL-Core and doesn't require a separate module.
-
-Install Utility Tools
----------------------
-
-**IDS Validator:**
-
-.. code-block:: bash
-
-   [user] eb IDS-Validator-5.4.3-intel-2023b.eb --robot --parallel 8
-
-**IDS tools:**
-
-.. code-block:: bash
-
-   [user] eb IDStools-5.4.3-intel-2023b.eb --robot --parallel 8
-
-**IMAS Python utilities:**
-
-.. code-block:: bash
-
-   [user] eb IMAS-Python-5.4.3-intel-2023b.eb --robot --parallel 8
-
-Install Complete IMAS Suite
-----------------------------
-
-Finally, install the IMAS meta-module that loads the complete environment:
-
-.. code-block:: bash
-
-   [user] eb IMAS-5.4.3-intel-2023b.eb --robot --parallel 8
-
-This module will load all IMAS components in the correct order.
+   [user] eb IMAS-AL-Fortran-5.4.0-intel-2023b-DD-3.42.0.eb --robot --parallel 8
 
 Verifying IMAS Installation
 ============================
 
-Check Available Modules
+Check Installed Modules
 ------------------------
 
-List all installed IMAS modules:
+Verify that IMAS-AL-Fortran and its dependencies are installed:
 
 .. code-block:: bash
 
-   [user] module avail IMAS
-   [user] module spider IMAS
+   [user] module avail IMAS-AL-Fortran
+   [user] module spider IMAS-AL-Fortran
 
-You should see all installed IMAS modules and their versions.
+Load and Verify Module
+-----------------------
 
-Load and Test IMAS
--------------------
-
-Load the complete IMAS environment:
+Load the module and check environment variables:
 
 .. code-block:: bash
 
    [user] module purge
-   [user] module load IMAS/5.4.3-intel-2023b
+   [user] module load IMAS-AL-Fortran/5.4.0-intel-2023b-DD-3.42.0
    [user] module list
 
-Check that environment variables are set:
+This will automatically load all required dependencies (IMAS-AL-Core, IMAS-AL-MDSplus-models, etc.).
+
+Check environment variables:
 
 .. code-block:: bash
 
@@ -335,44 +284,28 @@ Check that environment variables are set:
    [user] echo $AL_VERSION
    [user] echo $AL_COMMON_PATH
 
-Test Python bindings:
+Test the Installation
+----------------------
+
+Create a simple test to verify the Fortran bindings work:
+
+.. code-block:: fortran
+   :caption: test_imas.f90
+
+   program test_imas
+     use imas
+     implicit none
+     
+     print *, "IMAS Fortran bindings loaded successfully!"
+   end program test_imas
+
+Compile and run:
 
 .. code-block:: bash
 
-   [user] python3 -c "import imas_core; print('IMAS Core loaded successfully')"
-
-Test with a simple Python script:
-
-.. code-block:: python
-   :caption: test_imas.py
-
-   #!/usr/bin/env python3
-   import imas_core
-   
-   print(f"IMAS Core version: {imas_core.__version__}")
-   print("IMAS Core loaded successfully!")
-
-Run the test:
-
-.. code-block:: bash
-
-   [user] python3 test_imas.py
-
-Alternative: Using FOSS Toolchain
-==================================
-
-If you prefer the open-source FOSS toolchain instead of Intel, follow the same process but use ``foss-2023b`` modules:
-
-.. code-block:: bash
-
-   # Install FOSS toolchain
-   [user] eb foss-2023b.eb --robot --parallel 8
-   
-   # Install IMAS with FOSS toolchain
-   [user] eb IMAS-AL-Core-5.4.3-foss-2023b.eb --robot --parallel 8
-   [user] eb IMAS-5.4.3-foss-2023b.eb --robot --parallel 8
-
-The FOSS toolchain is based on GCC and fully open-source, making it more portable and easier to troubleshoot.
+   [user] module load IMAS-AL-Fortran/5.4.0-intel-2023b-DD-3.42.0
+   [user] ifort test_imas.f90 -o test_imas $(pkg-config --cflags --libs al-fortran)
+   [user] ./test_imas
 
 Maintaining IMAS Installation
 ==============================
@@ -387,29 +320,29 @@ Periodically update the ITER easyconfigs repository:
    [user] cd /opt/easybuild/local-easyconfigs/imas-easyconfigs
    [user] git pull origin main
 
-Check for new IMAS versions:
+Check for new versions:
 
 .. code-block:: bash
 
-   [user] ls -la IMAS-AL-Core/
+   [user] ls -la IMAS-AL-Fortran/
 
 Building Multiple Versions
 ---------------------------
 
-You can install multiple IMAS versions side-by-side:
+You can install multiple versions side-by-side:
 
 .. code-block:: bash
 
-   [user] eb IMAS-AL-Core-5.4.3-intel-2023b.eb --robot --parallel 8
-   [user] eb IMAS-AL-Core-5.4.4-intel-2023b.eb --robot --parallel 8
+   [user] eb IMAS-AL-Fortran-5.4.0-intel-2023b-DD-3.42.0.eb --robot --parallel 8
+   [user] eb IMAS-AL-Fortran-5.4.0-intel-2023b-DD-4.0.0.eb --robot --parallel 8
 
-Users can then choose which version to load:
+Users switch between versions:
 
 .. code-block:: bash
 
-   [user] module load IMAS/5.4.3-intel-2023b
+   [user] module load IMAS-AL-Fortran/5.4.0-intel-2023b-DD-3.42.0
    # or
-   [user] module load IMAS/5.4.4-intel-2023b
+   [user] module load IMAS-AL-Fortran/5.5.0-intel-2023b-DD-3.43.0
 
 Cleaning Up Build Artifacts
 ----------------------------
@@ -434,163 +367,117 @@ Authentication Issues
 
 **Problem:** Cannot clone ITER repository
 
-.. code-block:: text
-
-   fatal: Authentication failed
-
 **Solution:** Set up SSH keys or configure git credentials:
 
 .. code-block:: bash
 
-   # Generate SSH key
    [user] ssh-keygen -t rsa -b 4096 -C "your.email@iter.org"
-   
-   # Add to ssh-agent
    [user] eval "$(ssh-agent -s)"
    [user] ssh-add ~/.ssh/id_rsa
-   
-   # Add public key to ITER git server
-   [user] cat ~/.ssh/id_rsa.pub
 
-Then add the public key to your ITER git account settings.
+Add the public key to your ITER git account.
 
 Source Download Failures
 -------------------------
 
 **Problem:** Cannot download IMAS source code
 
-.. code-block:: text
-
-   ERROR: Build failed: Failed to download source
-
-**Solution:** Check network connectivity and authentication:
+**Solution:** Check network connectivity:
 
 .. code-block:: bash
 
-   # Test connection to ITER git server
    [user] curl -I https://git.iter.org
-   
-   # Try manual download
-   [user] wget "https://git.iter.org/rest/api/latest/projects/IMAS/repos/al-core/archive?at=tags/5.4.3&format=tar.gz"
 
-If downloads fail, you may need to configure proxy settings or VPN access.
+Configure proxy or VPN if needed.
 
 Missing Dependencies
 --------------------
 
 **Problem:** Build fails due to missing dependencies
 
-.. code-block:: text
-
-   ERROR: Failed to process easyconfig: Unresolved dependencies
-
-**Solution:** Use ``--robot`` to automatically resolve dependencies:
+**Solution:** Use ``--robot`` for automatic dependency resolution:
 
 .. code-block:: bash
 
-   [user] eb IMAS-AL-Core-5.4.3-intel-2023b.eb --robot --dry-run
+   [user] eb IMAS-AL-Fortran-5.4.0-intel-2023b-DD-3.42.0.eb --robot --dry-run
+   [user] eb IMAS-AL-Fortran-5.4.0-intel-2023b-DD-3.42.0.eb --robot --parallel 8
 
-This shows what will be built. Then run the actual build:
+Build Failures
+--------------
 
-.. code-block:: bash
+**Problem:** Compilation errors during build
 
-   [user] eb IMAS-AL-Core-5.4.3-intel-2023b.eb --robot --parallel 8
-
-Python Import Errors
---------------------
-
-**Problem:** Cannot import IMAS Python modules
-
-.. code-block:: text
-
-   ModuleNotFoundError: No module named 'imas_core'
-
-**Solution:** Ensure the module is loaded and PYTHONPATH is set:
+**Solution:** Check the build log:
 
 .. code-block:: bash
 
-   [user] module load IMAS-AL-Core/5.4.3-intel-2023b
-   [user] echo $PYTHONPATH
-   [user] python3 -c "import sys; print(sys.path)"
+   [user] eb IMAS-AL-Fortran-5.4.0-intel-2023b-DD-3.42.0.eb --robot --parallel 8 2>&1 | tee build.log
 
-Check that the IMAS installation directory is in the Python path.
-
-Build Timeout Issues
---------------------
-
-**Problem:** Build times out or takes too long
-
-**Solution:** Increase parallel jobs or build on a more powerful machine:
-
-.. code-block:: bash
-
-   # Use more CPU cores
-   [user] eb IMAS-AL-Core-5.4.3-intel-2023b.eb --robot --parallel 16
-   
-   # Or build dependencies separately first
-   [user] eb HDF5-1.14.3-intel-2023b.eb --robot --parallel 8
-   [user] eb MDSplus-7.132.0-intel-2023b.eb --robot --parallel 8
+Review errors and verify all dependencies are compatible versions.
 
 Permission Errors
 -----------------
 
 **Problem:** Cannot write to installation directory
 
-.. code-block:: text
-
-   ERROR: Failed to create directory: Permission denied
-
-**Solution:** Check group membership and permissions:
+**Solution:** Check group membership:
 
 .. code-block:: bash
 
-   # Check group membership
-   [user] groups
+   [user] groups  # Should show 'easybuildgrp'
+   [root] usermod -aG easybuildgrp username  # If needed
+
+User must log out and back in for group changes to take effect.
+
+Understanding EasyConfig Files
+===============================
+
+Key Sections in IMAS EasyConfig Files
+--------------------------------------
+
+**Example from IMAS-AL-Fortran-5.4.0-intel-2023b-DD-3.42.0.eb:**
+
+.. code-block:: python
+
+   easyblock = 'CMakeMake'  # Build system used
    
-   # Should show 'easybuildgrp'
-   # If not, add user to group
-   [root] usermod -aG easybuildgrp username
+   name = 'IMAS-AL-Fortran'
+   version = '5.4.0'
+   versionsuffix = '-DD-3.42.0'  # Data Dictionary version
    
-   # User must log out and back in for group change to take effect
+   toolchain = {'name': 'intel', 'version': '2023b'}
+   
+   builddependencies = [  # Only needed during build
+       ('CMake', '3.27.6'),
+       ('Saxon-HE', '12.4', '-Java-21', SYSTEM),
+   ]
+   
+   dependencies = [  # Required at runtime
+       ('IMAS-AL-Core', '5.4.3'),
+       ('IMAS-AL-MDSplus-models', '5.2.2', '-DD-3.39.0'),
+   ]
+   
+   source_urls = [...]  # Where to download source
+   sources = [SOURCE_TAR_GZ]
+   checksums = [...]  # Verify download integrity
+   
+   configopts = (...)  # CMake configuration options
 
-Complete Module List for IMAS Setup
-====================================
+Applying to Other IMAS Modules
+-------------------------------
 
-For reference, here's the complete list of modules typically required for a full IMAS installation:
+The same installation process applies to other IMAS language bindings:
 
-**Base Toolchain:**
+**Python bindings:**
 
-* GCCcore-13.2.0 (for foss) or intel-compiler-2023.2.1 (for intel)
-* foss-2023b or intel-2023b
+.. code-block:: bash
 
-**Core Dependencies:**
+   [user] eb IMAS-AL-Python-5.4.3-intel-2023b.eb --robot --parallel 8
 
-* HDF5-1.14.3
-* MDSplus-7.132.0
-* UDA-2.8.0
-* Boost-1.83.0
-* SciPy-bundle-2023.12 (includes NumPy, SciPy, pandas)
+**C++ bindings:**
 
-**Build Tools:**
+.. code-block:: bash
 
-* CMake-3.27.6
-* Ninja-1.11.1
-* scikit-build-core-0.9.3
-* Cython-3.0.10
-* cython-cmake-0.2.0
+   [user] eb IMAS-AL-Cpp-5.4.3-intel-2023b.eb --robot --parallel 8
 
-**IMAS Modules:**
-
-* IMAS-AL-Core-5.4.3
-* IMAS-AL-Cpp-5.4.3
-* IMAS-AL-Fortran-5.4.3
-* IMAS-AL-Python-5.4.3
-* IMAS-AL-Java-5.4.3 (optional)
-* IMAS-AL-Matlab-5.4.3 (optional)
-* IMAS-AL-MDSplus-models-5.4.3
-* IDS-Validator-5.4.3
-* IDStools-5.4.3
-* IMAS-Python-5.4.3
-* IMAS-5.4.3 (meta-module)
-
-This represents a complete IMAS installation with all language bindings and backend support.
+All follow the same dependency pattern and build process.
